@@ -12,5 +12,7 @@ namespace LederfestPhoto.Models
 
         [Range(-1, 10)]
         public int Rating { get; set; } = -1;
+
+        public string BlobPath { get; set; }
     }
 }
