@@ -123,6 +123,12 @@ namespace LederfestPhoto.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [HttpGet, Route("Results")]
+        public async Task<IActionResult> Results()
+        {
+            var scoreResults = await _context.Photos.Include(t => t.Team).GroupBy(t => t.Team).Select(g => new ScoreResult(g)).ToListAsync();
+            return Ok(scoreResults.OrderByDescending(r => r.Score));
+        }
 
         private static string ResizeImage(string inputPath)
         {

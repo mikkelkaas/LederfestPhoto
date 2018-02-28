@@ -63,32 +63,6 @@ namespace LederfestPhoto.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        [HttpGet, Route("Results")]
-        public async Task<IActionResult> Results()
-        {
-            var scoreResults = await _context.Photos.Include(t=>t.Team).GroupBy(t => t.Team).Select(g=>new ScoreResult(g)).ToListAsync();
 
-            
-            return Ok(test.OrderByDescending(r=>r.Score));
-        }
-
-    }
-
-    public class ScoreResult
-    {
-        public string Team;
-        //public List<Photo> Photos;
-        public int Score { get; set; }
-        public ScoreResult(IGrouping<Team, Photo> grouping)
-        {
-            Team = grouping.Key.Name;
-            //Photos = grouping.Select(e => e).ToList();
-            //Rating = Photos.Where(r => r.Rating > -1).Sum(r => r.Rating);
-            
-            Score = grouping.Select(e => e).Where(r => r.Rating > -1).Sum(r => r.Rating);
-
-        }
-
-        
     }
 }
