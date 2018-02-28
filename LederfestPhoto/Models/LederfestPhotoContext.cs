@@ -11,5 +11,6 @@ namespace LederfestPhoto.Models
 
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Challenge> Challenges { get; set; }
+        public DbSet<Team> Teams { get; set; }
     }
 }

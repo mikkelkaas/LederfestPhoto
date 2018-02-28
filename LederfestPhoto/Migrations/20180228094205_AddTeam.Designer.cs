@@ -11,9 +11,10 @@ using System;
 namespace LederfestPhoto.Migrations
 {
     [DbContext(typeof(LederfestPhotoContext))]
-    partial class LederfestPhotoContextModelSnapshot : ModelSnapshot
+    [Migration("20180228094205_AddTeam")]
+    partial class AddTeam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

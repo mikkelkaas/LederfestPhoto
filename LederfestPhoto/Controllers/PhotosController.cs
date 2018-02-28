@@ -1,97 +1,116 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ImageSharp;
 using ImageSharp.Processing;
-using Microsoft.AspNetCore.Mvc;
+using LederfestPhoto.Configuration;
 using LederfestPhoto.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Options;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Auth;
 
 namespace LederfestPhoto.Controllers
 {
     [Route("api/[controller]")]
     public class PhotosController : Controller
     {
+        private readonly ConnectionStrings _connectionStrings;
         private readonly LederfestPhotoContext _context;
 
-        protected PhotosController(LederfestPhotoContext context)
+        public PhotosController(LederfestPhotoContext context, IOptions<ConnectionStrings> connectionStrings)
         {
             _context = context;
+            _connectionStrings = connectionStrings.Value;
         }
 
         // GET api/values
         [HttpGet]
-        public async Task<IActionResult> Get([FromRoute]bool excludeNotRated = true)
+        [Route("GetSingle")]
+        public async Task<IActionResult> GetSingle(bool excludenotrated = true)
         {
-            return Ok(excludeNotRated ? await _context.Photos.Where(r => r.Rating > -1).OrderBy(r => Guid.NewGuid()).FirstOrDefaultAsync() : await _context.Photos.OrderBy(r => Guid.NewGuid()).FirstOrDefaultAsync());
+            return Ok(excludenotrated
+                ? await _context.Photos.Include(i => i.Team).Include(i => i.Challenge).Where(r => r.Rating > -1)
+                    .OrderBy(r => Guid.NewGuid()).FirstOrDefaultAsync()
+                : await _context.Photos.Include(i => i.Team).Include(i => i.Challenge).OrderBy(r => Guid.NewGuid())
+                    .FirstOrDefaultAsync());
+        }
+
+        // GET api/values
+        [HttpGet]
+        [Route("GetAll")]
+        public async Task<IActionResult> GetAll(bool excludenotrated = true)
+        {
+            return Ok(excludenotrated
+                ? await _context.Photos.Where(r => r.Rating > -1).Include(i => i.Team).Include(i => i.Challenge)
+                    .ToListAsync()
+                : await _context.Photos.Include(i => i.Team).Include(i => i.Challenge).ToListAsync());
         }
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PhotoInputModel input)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Post(PhotoInputModel input)
         {
-            var challenge = await _context.Challenges.Where(c => c.Id == input.Challenge).FirstAsync();
+            var challenge = await _context.Challenges.Where(c => c.Id == input.Challenge).FirstOrDefaultAsync();
+            if (challenge == null)
+                return BadRequest("Challenge not found");
+            Team team = null;
+            if (input.Team == Guid.Empty)
+            {
+                team = new Team
+                {
+                    Id = new Guid(),
+                    Name = input.TeamName
+                };
+                _context.Add(team);
+            }
+            else
+            {
+                team = await _context.Teams.Where(t => t.Id == input.Team).FirstAsync();
+            }
             var guid = Guid.NewGuid();
 
-            var photo = new Photo()
+            var photo = new Photo
             {
-                Team = input.Team,
+                Team = team,
                 Text = input.Text,
                 Challenge = challenge,
                 Id = guid
             };
             if (ModelState.IsValid)
             {
-
-                var photos = input.Photos;
-                
-
-                // full path to file in temp location
                 var filePathPhoto = Path.GetTempFileName();
 
-                foreach (var formFile in photos)
+                using (var stream = new FileStream(filePathPhoto, FileMode.Create))
                 {
-                    if (formFile.Length > 0)
-                    {
-                        using (var stream = new FileStream(filePathPhoto, FileMode.Create))
-                        {
-                            await formFile.CopyToAsync(stream);
-                        }
-                    }
+                    await input.Photo.CopyToAsync(stream);
                 }
 
+                var filePathPhotoResized = ResizeImage(filePathPhoto);
 
-
-                var filePathQuestionResized = ResizeImage(filePathPhoto);
-
-                var photoResizedBlobPath = await uploadToAzureBlob(guid, filePathQuestionResized);
+                var photoResizedBlobPath = await uploadToAzureBlob(guid, filePathPhotoResized);
 
                 photo.BlobPath = photoResizedBlobPath;
-                
-
-
-                
                 _context.Add(photo);
                 await _context.SaveChangesAsync();
 
                 System.IO.File.Delete(filePathPhoto);
+                System.IO.File.Delete(filePathPhotoResized);
             }
             return Ok();
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody]int rating)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateRatingInputModel input)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             var photo = await _context.Photos.Where(p => p.Id == id).FirstAsync();
-            photo.Rating = rating;
+            photo.Rating = input.Rating;
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -113,32 +132,29 @@ namespace LederfestPhoto.Controllers
                 using (var output = System.IO.File.OpenWrite(outputPath))
                 {
                     var image = new Image(imageToResize).Resize(new ResizeOptions
-                        {
-                            Size = new ImageSharp.Size(1000, 1000),
+                    {
+                        Size = new Size(1000, 1000),
 
-                            Mode = ResizeMode.Max
-                        });
+                        Mode = ResizeMode.Max
+                    });
                     image.Save(output);
                 }
             }
             return outputPath;
         }
 
-        private static async Task<string> uploadToAzureBlob(Guid guid, string filePath)
+        private async Task<string> uploadToAzureBlob(Guid guid, string filePath)
         {
-            CloudStorageAccount storageAccount = new CloudStorageAccount(
-                new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(
-                    "",
-                    ""), true);
-
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_connectionStrings.AzureCloudStorage);
+            
             // Create a blob client.
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+            var blobClient = storageAccount.CreateCloudBlobClient();
 
             // Get a reference to a container named "mycontainer."
-            CloudBlobContainer container = blobClient.GetContainerReference("images");
+            var container = blobClient.GetContainerReference("images");
             var documentName = guid.ToString();
 
-            CloudBlockBlob blockBlob = container.GetBlockBlobReference(documentName);
+            var blockBlob = container.GetBlockBlobReference(documentName);
 
             // Create or overwrite the "myblob" blob with the contents of a local file
             // named "myfile".

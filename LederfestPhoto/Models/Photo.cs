@@ -6,7 +6,7 @@ namespace LederfestPhoto.Models
     public class Photo
     {
         public Guid Id { get; set; }
-        public Guid Team { get; set; }
+        public Team Team { get; set; }
         public string Text { get; set; }
         public Challenge Challenge { get; set; }
 
