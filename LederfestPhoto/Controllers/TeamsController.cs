@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LederfestPhoto.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace LederfestPhoto.Controllers
 {
     [Produces("application/json")]
+    [EnableCors("MyPolicy")]
     [Route("api/Teams")]
     public class TeamsController : Controller
     {

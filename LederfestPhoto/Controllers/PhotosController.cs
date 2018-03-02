@@ -6,6 +6,7 @@ using ImageSharp;
 using ImageSharp.Processing;
 using LederfestPhoto.Configuration;
 using LederfestPhoto.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -15,6 +16,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 namespace LederfestPhoto.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors("MyPolicy")]
     public class PhotosController : Controller
     {
         private readonly ConnectionStrings _connectionStrings;

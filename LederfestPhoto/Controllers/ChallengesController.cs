@@ -9,6 +9,7 @@ using ImageSharp.Processing;
 using LederfestPhoto.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using LederfestPhoto.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
@@ -18,6 +19,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 namespace LederfestPhoto.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors("MyPolicy")]
     public class ChallengesController : Controller
     {
         private readonly LederfestPhotoContext _context;

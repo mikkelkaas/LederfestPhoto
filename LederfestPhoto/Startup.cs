@@ -23,7 +23,12 @@ namespace LederfestPhoto
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<ConnectionStrings>(Configuration.GetSection("ConnectionStrings"));
-            
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
             services.AddMvc();
             services.AddDbContext<LederfestPhotoContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("LederfestPhotoContext")));
@@ -40,7 +45,7 @@ namespace LederfestPhoto
         {
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
-
+            app.UseCors("MyPolicy");
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
