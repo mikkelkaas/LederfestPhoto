@@ -30,11 +30,14 @@ namespace LederfestPhoto.Controllers
         }
 
         [HttpGet("{id}", Name = "Get")]
-        public async Task<IActionResult> Get([FromRoute]Guid id)
+        public async Task<IActionResult> Get([FromRoute] Guid id)
         {
-            var challenge = await _context.Challenges.FindAsync(id);
-            return Ok(challenge);
+            List<Guid> used = await _context.Photos.Include(t => t.Team).Include(c => c.Challenge)
+                .Where(p => p.Team.Id == id).Select(t => t.Challenge.Id).ToListAsync();
+            var challenges = await _context.Challenges.Where(x => !used.Contains(x.Id)).ToListAsync();
+            return Ok(challenges);
         }
+
         [HttpGet()]
         public async Task<IActionResult> Get()
         {
