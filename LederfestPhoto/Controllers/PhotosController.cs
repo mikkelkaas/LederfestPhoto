@@ -57,20 +57,10 @@ namespace LederfestPhoto.Controllers
             var challenge = await _context.Challenges.Where(c => c.Id == input.Challenge).FirstOrDefaultAsync();
             if (challenge == null)
                 return BadRequest("Challenge not found");
-            Team team = null;
-            if (input.Team == Guid.Empty)
-            {
-                team = new Team
-                {
-                    Id = new Guid(),
-                    Name = input.TeamName
-                };
-                _context.Add(team);
-            }
-            else
-            {
-                team = await _context.Teams.Where(t => t.Id == input.Team).FirstAsync();
-            }
+            Team team = await _context.Teams.Where(t => t.Id == input.Team).FirstOrDefaultAsync();
+            if (team == null)
+                return BadRequest("Team not found");
+        
             var guid = Guid.NewGuid();
 
             var photo = new Photo
