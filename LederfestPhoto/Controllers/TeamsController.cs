@@ -83,13 +83,17 @@ namespace LederfestPhoto.Controllers
 
         // POST: api/Teams
         [HttpPost]
-        public async Task<IActionResult> PostTeam([FromBody] Team team)
+        public async Task<IActionResult> PostTeam([FromBody] TeamInputModel input)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+            var team = new Team
+            {
+                Id = new Guid(),
+                Name = input.name
+            };
             _context.Teams.Add(team);
             await _context.SaveChangesAsync();
 
