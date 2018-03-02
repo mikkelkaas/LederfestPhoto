@@ -68,7 +68,7 @@ namespace LederfestPhoto.Controllers
             var photo = new Photo
             {
                 Team = team,
-                Text = input.Text,
+                //Text = input.Text,
                 Challenge = challenge,
                 Id = guid
             };

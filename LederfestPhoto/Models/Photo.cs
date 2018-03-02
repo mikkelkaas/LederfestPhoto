@@ -7,7 +7,7 @@ namespace LederfestPhoto.Models
     {
         public Guid Id { get; set; }
         public Team Team { get; set; }
-        public string Text { get; set; }
+        //public string Text { get; set; }
         public Challenge Challenge { get; set; }
 
         [Range(-1, 10)]
