@@ -83,6 +83,11 @@ namespace LederfestPhoto.Controllers
                 Challenge = challenge,
                 Id = guid
             };
+            if (_context.Photos.Include(t => t.Team).Include(c => c.Challenge)
+                    .Count(t => t.Team.Id == team.Id && t.Challenge.Id == challenge.Id) > 0)
+            {
+                return BadRequest("Allready posted");
+            }
             if (ModelState.IsValid)
             {
                 var filePathPhoto = Path.GetTempFileName();
