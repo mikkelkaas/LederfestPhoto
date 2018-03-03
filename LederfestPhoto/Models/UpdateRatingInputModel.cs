@@ -4,7 +4,7 @@ namespace LederfestPhoto.Models
 {
     public class UpdateRatingInputModel
     {
-        [Range(-1,10)]
+        [Range(-1,5)]
         public int Rating { get; set; }
     }
 }

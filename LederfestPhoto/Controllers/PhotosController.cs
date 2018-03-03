@@ -40,6 +40,17 @@ namespace LederfestPhoto.Controllers
                     .FirstOrDefaultAsync());
         }
 
+
+        // GET api/values
+        [HttpGet]
+        [Route("GetUnrated")]
+        public async Task<IActionResult> GetUnrated()
+        {
+            return Ok(await _context.Photos.Include(i => i.Team).Include(i => i.Challenge).Where(r => r.Rating == -1)
+                .OrderBy(r => Guid.NewGuid()).FirstOrDefaultAsync());
+        }
+
+
         // GET api/values
         [HttpGet]
         [Route("GetAll")]
