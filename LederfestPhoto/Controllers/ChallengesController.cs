@@ -34,7 +34,7 @@ namespace LederfestPhoto.Controllers
         {
             List<Guid> used = await _context.Photos.Include(t => t.Team).Include(c => c.Challenge)
                 .Where(p => p.Team.Id == id).Select(t => t.Challenge.Id).ToListAsync();
-            var challenges = await _context.Challenges.Where(x => !used.Contains(x.Id)).ToListAsync();
+            var challenges = await _context.Challenges.Where(x => !used.Contains(x.Id) && x.ReleaseDateTime < DateTime.Now).ToListAsync();
             return Ok(challenges);
         }
 
