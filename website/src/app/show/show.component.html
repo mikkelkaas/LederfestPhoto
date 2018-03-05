@@ -1,0 +1,23 @@
+<!-- <div class="container">
+  <div *ngFor="let photo of photos">
+    <img src="{{photo.blobPath}}" style="width:100%" />
+    <div>
+      <p>Rating: {{photo.rating}}/5</p>
+      <p>Hold: {{photo.team.name}}</p>
+
+      <p>Billede: {{photo.challenge.description}}</p>
+
+    </div>
+  </div>
+</div> -->
+<div class="container">
+<ngb-carousel>
+    <ng-template *ngFor="let photo of photos" ngbSlide>
+      <img class="text-center" src="{{photo.blobPath}}" alt="Random first slide" style="max-height:100vh;    display: block;      margin-left: auto;      margin-right: auto;">
+      <div class="carousel-caption">
+        <h3>Hold: {{photo.team.name}}</h3>
+        <p>Rating: {{photo.rating}}/5. {{photo.challenge.description}}</p>
+      </div>
+    </ng-template>
+  </ngb-carousel>
+</div>

@@ -1,0 +1,11 @@
+<div class="container">
+    <h1 class="text-center">{{team.name}}</h1>
+    <h2 class="text-center form-signin-heading">Vælg billede</h2>
+    <select #selectedChallenge class="form-control" >
+      <option *ngFor="let value of challenges" value={{value.id}}>{{value.description}}</option>
+    </select>
+
+    <input class="mt-2" #fileholder type="file" placeholder="Upload file" accept="image/*;capture=camera">
+    <button [disabled]="disable" class="mt-2 btn btn-lg btn-primary btn-block" (click)="fileChange(selectedChallenge.value)">{{text}}</button>
+  </div>
+  <!-- /container -->
