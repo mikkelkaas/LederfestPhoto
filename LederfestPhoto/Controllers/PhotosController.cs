@@ -119,6 +119,7 @@ namespace LederfestPhoto.Controllers
                 return BadRequest(ModelState);
             var photo = await _context.Photos.Where(p => p.Id == id).FirstAsync();
             photo.Rating = input.Rating;
+            photo.Rotation = input.Rotation;
             await _context.SaveChangesAsync();
             return Ok();
         }

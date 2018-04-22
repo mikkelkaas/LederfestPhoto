@@ -3,6 +3,7 @@
     <h2 class="text-center form-signin-heading">Vælg billede</h2>
     <select #selectedChallenge class="form-control" >
       <option *ngFor="let value of challenges" value={{value.id}}>{{value.description}}</option>
+      <optgroup label=""></optgroup>
     </select>
 
     <input class="mt-2" #fileholder type="file" placeholder="Upload file" accept="image/*;capture=camera">

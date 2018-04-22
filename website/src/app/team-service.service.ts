@@ -30,8 +30,8 @@ export class TeamServiceService {
       .map(res => res.json());
   }
 
-  rate(photo: string, rating: number) {
-    return this.http.put(AppSettings.API_ENDPOINT + 'Photos/' + photo + '/', JSON.stringify({ rating: rating }));
+  rate(photo: string, rating: number, rotation: number) {
+    return this.http.put(AppSettings.API_ENDPOINT + 'Photos/' + photo + '/', JSON.stringify({ rating: rating, rotation: rotation}));
   }
 
 

@@ -6,5 +6,7 @@ namespace LederfestPhoto.Models
     {
         [Range(-1,5)]
         public int Rating { get; set; }
+
+        public int Rotation { get; set; } = 0;
     }
 }

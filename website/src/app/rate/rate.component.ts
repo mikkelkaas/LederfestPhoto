@@ -26,8 +26,8 @@ export class RateComponent implements OnInit {
       this.photo = photo;
     });
   }
-  rate(rating: any, photo: string) {
-    this.teamServiceService.rate(photo, Number(rating)).subscribe(
+  rate(rating: any, rotation: any, photo: string) {
+    this.teamServiceService.rate(photo, Number(rating), Number(rotation)).subscribe(
       success => {
         console.log(success);
         window.location.reload();

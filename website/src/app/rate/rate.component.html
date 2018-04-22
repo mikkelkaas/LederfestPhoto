@@ -9,5 +9,12 @@
     <option value="4">4</option>
     <option value="5">5</option>
   </select>
-    <button (click)="rate(rating.value, photo.id)">Rate</button>
-  </div>
+  Rotation:
+  <select #rotation>
+    <option value="0">0</option>
+    <option value="90">90</option>
+    <option value="180">180</option>
+    <option value="270">270</option>
+  </select>
+  <button (click)="rate(rating.value, rotation.value, photo.id)">Rate</button>
+</div>

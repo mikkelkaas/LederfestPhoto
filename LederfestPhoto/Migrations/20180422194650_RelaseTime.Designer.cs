@@ -11,9 +11,10 @@ using System;
 namespace LederfestPhoto.Migrations
 {
     [DbContext(typeof(LederfestPhotoContext))]
-    partial class LederfestPhotoContextModelSnapshot : ModelSnapshot
+    [Migration("20180422194650_RelaseTime")]
+    partial class RelaseTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,8 +45,6 @@ namespace LederfestPhoto.Migrations
                     b.Property<Guid?>("ChallengeId");
 
                     b.Property<int>("Rating");
-
-                    b.Property<int>("Rotation");
 
                     b.Property<Guid?>("TeamId");
 

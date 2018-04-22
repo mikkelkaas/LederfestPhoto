@@ -14,5 +14,6 @@ namespace LederfestPhoto.Models
         public int Rating { get; set; } = -1;
 
         public string BlobPath { get; set; }
+        public int Rotation { get; set; }
     }
 }

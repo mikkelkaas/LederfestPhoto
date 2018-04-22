@@ -11,9 +11,9 @@
   </div>
 </div> -->
 <div class="container">
-<ngb-carousel>
+  <ngb-carousel>
     <ng-template *ngFor="let photo of photos" ngbSlide>
-      <img class="text-center" src="{{photo.blobPath}}" alt="Random first slide" style="max-height:100vh;    display: block;      margin-left: auto;      margin-right: auto;">
+      <img class="text-center blahblah" [style.transform]="'rotate(' + photo.rotation + 'deg)'" src="{{photo.blobPath}}" alt="Random first slide">
       <div class="carousel-caption">
         <h3>Hold: {{photo.team.name}}</h3>
         <p>Rating: {{photo.rating}}/5. {{photo.challenge.description}}</p>

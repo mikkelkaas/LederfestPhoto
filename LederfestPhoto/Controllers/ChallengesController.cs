@@ -51,7 +51,8 @@ namespace LederfestPhoto.Controllers
             var challenge = new Challenge()
             {
                 Id = new Guid(),
-                Description = input.Text
+                Description = input.Text,
+                ReleaseDateTime = input.ReleaseDate
             };
             _context.Add(challenge);
             await _context.SaveChangesAsync();
