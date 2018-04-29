@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { RequestOptions, Http, Headers } from '@angular/http';
 import { AppSettings } from '../app.settings';
 import { Router } from '@angular/router';
+import { Ng2ImgMaxService } from 'ng2-img-max';
 @Component({
   selector: 'app-challenge',
   templateUrl: './challenge.component.html',
@@ -20,7 +21,8 @@ export class ChallengeComponent implements OnInit {
   constructor(
     private teamServiceService: TeamServiceService,
     private http: Http,
-    private router: Router
+    private router: Router,
+    private ng2ImgMax: Ng2ImgMaxService
   ) { }
 
   ngOnInit() {
@@ -41,24 +43,36 @@ export class ChallengeComponent implements OnInit {
     const fileList = this.fileInputVariable.nativeElement.files;
     if (fileList.length > 0) {
       const file: File = fileList[0];
-      const formData: FormData = new FormData();
-      formData.append('photo', file, file.name);
-      formData.append('Team', this.team.id);
-      // formData.append('Text', 'TestText');
-      formData.append('Challenge', challenge);
-      const headerss = new Headers();
-      /** No need to include Content-Type in Angular 4 */
-      // headerss.append('Content-Type', 'multipart/form-data');
-      headerss.append('Accept', 'application/json');
-      const options = new RequestOptions({ headers: headerss });
-      this.http.post(AppSettings.API_ENDPOINT + 'Photos/', formData, options)
-        .subscribe(
-          data => {
-            console.log('success');
-            window.location.reload();
-          },
-          error => console.log(error)
-        );
+      this.ng2ImgMax.resizeImage(file, 10000, 1000).subscribe(
+        result => {
+          console.log('Resized image');
+          const uploadedImage = new File([result], result.name);
+          const formData: FormData = new FormData();
+          formData.append('photo', uploadedImage, file.name);
+          formData.append('Team', this.team.id);
+          // formData.append('Text', 'TestText');
+          formData.append('Challenge', challenge);
+          const headerss = new Headers();
+          /** No need to include Content-Type in Angular 4 */
+          // headerss.append('Content-Type', 'multipart/form-data');
+          headerss.append('Accept', 'application/json');
+          const options = new RequestOptions({ headers: headerss });
+
+
+          this.http.post(AppSettings.API_ENDPOINT + 'Photos/', formData, options)
+            .subscribe(
+              data => {
+                console.log('uploaded');
+                window.location.reload();
+              },
+              error => console.log(error)
+            );
+        },
+        error => {
+          console.log('😢 Oh no!', error);
+        }
+      );
+
     }
   }
 

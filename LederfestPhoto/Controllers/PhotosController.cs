@@ -97,16 +97,16 @@ namespace LederfestPhoto.Controllers
                     await input.Photo.CopyToAsync(stream);
                 }
 
-                var filePathPhotoResized = ResizeImage(filePathPhoto);
+                //var filePathPhotoResized = ResizeImage(filePathPhoto);
 
-                var photoResizedBlobPath = await uploadToAzureBlob(guid, filePathPhotoResized);
+                var photoResizedBlobPath = await uploadToAzureBlob(guid, filePathPhoto);
 
                 photo.BlobPath = photoResizedBlobPath;
                 _context.Add(photo);
                 await _context.SaveChangesAsync();
 
                 System.IO.File.Delete(filePathPhoto);
-                System.IO.File.Delete(filePathPhotoResized);
+                //System.IO.File.Delete(filePathPhotoResized);
             }
             return Ok();
         }
