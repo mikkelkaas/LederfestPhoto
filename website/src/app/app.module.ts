@@ -9,6 +9,8 @@ import { RequestOptionsService } from './RequestOptionsService';
 import { RequestOptions } from '@angular/http';
 import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
+
 import { ChallengeComponent } from './challenge/challenge.component';
 import { DoneComponent } from './done/done.component';
 import { RateComponent } from './rate/rate.component';
@@ -64,6 +66,7 @@ const appRoutes: Routes = [
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     HttpModule,
     Ng2ImgMaxModule,
     NgbModule.forRoot(),
